@@ -247,6 +247,7 @@ const categoryColors: Record<string, string> = {
   Frontend: "bg-[#6EE7FF]/10 text-cyan-700 border-[#6EE7FF]/30",
   DevOps: "bg-purple-100 text-purple-700 border-purple-200",
   Design: "bg-cyan-50 text-cyan-700 border-cyan-200",
+  "Image Generation": "bg-pink-50 text-pink-700 border-pink-200",
 };
 
 const categoryGradients: Record<string, string> = {
@@ -254,6 +255,7 @@ const categoryGradients: Record<string, string> = {
   Frontend: "from-[#6EE7FF] via-cyan-400 to-[#6EE7FF]",
   DevOps: "from-purple-500 via-purple-400 to-purple-500",
   Design: "from-cyan-500 via-cyan-400 to-cyan-500",
+  "Image Generation": "from-pink-500 via-rose-400 to-pink-500",
 };
 
 export function AllPrompts({ onBack }: AllPromptsProps) {
@@ -313,6 +315,7 @@ export function AllPrompts({ onBack }: AllPromptsProps) {
               <SelectItem value="Frontend">Frontend</SelectItem>
               <SelectItem value="DevOps">DevOps</SelectItem>
               <SelectItem value="Design">Design</SelectItem>
+              <SelectItem value="Image Generation">Image Generation</SelectItem>
             </SelectContent>
           </Select>
         </div>

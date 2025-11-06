@@ -1,7 +1,24 @@
 import { Button } from "./ui/button";
 import { Sparkles, Zap } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { SignupDialog } from "./SignupDialog";
+import { useState } from "react";
 
-export function Hero() {
+interface HeroProps {
+  onNavigateToDashboard?: () => void;
+}
+
+export function Hero({ onNavigateToDashboard }: HeroProps) {
+  const { user } = useAuth();
+  const [signupDialogOpen, setSignupDialogOpen] = useState(false);
+
+  const handleSubmitPrompt = () => {
+    if (user) {
+      onNavigateToDashboard?.();
+    } else {
+      setSignupDialogOpen(true);
+    }
+  };
   return (
     <section id="home" className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white">
       {/* Abstract geometric background with purple and cyan */}
@@ -42,6 +59,7 @@ export function Hero() {
               size="lg" 
               variant="outline" 
               className="border-2 border-[#6EE7FF] text-[#6EE7FF] hover:bg-[#6EE7FF]/10 px-8 py-6 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              onClick={handleSubmitPrompt}
             >
               Submit a Prompt
             </Button>
@@ -64,6 +82,18 @@ export function Hero() {
           </div>
         </div>
       </div>
+      <SignupDialog 
+        open={signupDialogOpen} 
+        onOpenChange={setSignupDialogOpen}
+        defaultTab="email"
+        initialMode="signup"
+        onSuccess={() => {
+          // Small delay to ensure auth state is updated
+          setTimeout(() => {
+            onNavigateToDashboard?.();
+          }, 500);
+        }}
+      />
     </section>
   );
 }
