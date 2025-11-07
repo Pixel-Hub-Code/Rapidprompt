@@ -25,11 +25,7 @@ const features = [
   },
 ];
 
-interface FeaturesProps {
-  onNavigateToCategories?: () => void;
-}
-
-export function Features({ onNavigateToCategories }: FeaturesProps) {
+export function Features() {
   return (
     <section id="features" className="py-20 lg:py-28 bg-gradient-to-b from-white via-slate-50 to-white relative overflow-hidden">
       {/* Decorative elements */}
@@ -53,13 +49,8 @@ export function Features({ onNavigateToCategories }: FeaturesProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
           {features.map((feature, index) => (
             <Card 
-              key={index}
-              onClick={() => {
-                if (feature.title === "Categories") {
-                  onNavigateToCategories?.();
-                }
-              }}
-              className={`relative border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white overflow-hidden group ${feature.title === "Categories" ? "cursor-pointer" : ""}`}
+              key={index} 
+              className="relative border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 bg-white overflow-hidden group"
             >
               {/* Gradient border effect */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>

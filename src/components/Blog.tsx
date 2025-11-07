@@ -1,41 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { ArrowRight, Calendar, Clock, BookOpen } from "lucide-react";
+import { getRecentBlogPosts } from "../data/blogPosts";
 
-const blogPosts = [
-  {
-    title: "10 Essential AI Prompts Every Developer Should Know",
-    excerpt: "Discover the most useful AI prompts that will transform your daily development workflow and boost productivity by 10x.",
-    date: "Nov 3, 2025",
-    readTime: "5 min read",
-    category: "Productivity",
-    author: "Sarah Chen",
-  },
-  {
-    title: "How to Write Effective Prompts for Code Generation",
-    excerpt: "Learn the art of prompt engineering specifically for generating clean, maintainable code with AI assistants.",
-    date: "Oct 28, 2025",
-    readTime: "8 min read",
-    category: "Guide",
-    author: "Marcus Johnson",
-  },
-  {
-    title: "Building a Custom Prompt Library for Your Team",
-    excerpt: "A comprehensive guide to creating and organizing team-specific prompts that align with your coding standards and best practices.",
-    date: "Oct 15, 2025",
-    readTime: "6 min read",
-    category: "Team",
-    author: "Emily Rodriguez",
-  },
-  {
-    title: "The Future of AI-Assisted Development",
-    excerpt: "Exploring emerging trends in AI pair programming and what it means for the future of software development and engineering teams.",
-    date: "Oct 8, 2025",
-    readTime: "7 min read",
-    category: "Trends",
-    author: "David Kim",
-  },
-];
+const blogPosts = getRecentBlogPosts(4);
 
 const categoryGradients: Record<string, string> = {
   Productivity: "from-[#8A2BE2] to-purple-600",
@@ -46,9 +14,10 @@ const categoryGradients: Record<string, string> = {
 
 interface BlogProps {
   onNavigateToAll: () => void;
+  onNavigateToBlogPost: () => void;
 }
 
-export function Blog({ onNavigateToAll }: BlogProps) {
+export function Blog({ onNavigateToAll, onNavigateToBlogPost }: BlogProps) {
   return (
     <section id="blog" className="py-20 lg:py-28 bg-white relative overflow-hidden">
       {/* Decorative elements */}
@@ -72,8 +41,9 @@ export function Blog({ onNavigateToAll }: BlogProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {blogPosts.map((post, index) => (
             <Card 
-              key={index} 
-              className="hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-white group overflow-hidden"
+              key={index}
+              onClick={onNavigateToBlogPost}
+              className="hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-white group overflow-hidden cursor-pointer"
             >
               <div className={`h-2 bg-gradient-to-r ${categoryGradients[post.category]}`}></div>
               <CardHeader className="pb-4">
@@ -98,7 +68,11 @@ export function Blog({ onNavigateToAll }: BlogProps) {
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <span className="text-xs text-slate-500">By {post.author}</span>
                   <Button 
-                    variant="link" 
+                    variant="link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigateToBlogPost();
+                    }}
                     className="text-[#8A2BE2] hover:text-purple-700 p-0 h-auto group/btn"
                   >
                     Read

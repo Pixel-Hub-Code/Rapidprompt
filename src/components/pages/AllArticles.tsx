@@ -3,85 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { ArrowLeft, ArrowRight, Calendar, Clock, BookOpen, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useState } from "react";
+import { blogPosts as allArticles } from "../../data/blogPosts";
 
 interface AllArticlesProps {
   onBack: () => void;
+  onNavigateToBlogPost: () => void;
 }
-
-const allArticles = [
-  {
-    title: "10 Essential AI Prompts Every Developer Should Know",
-    excerpt: "Discover the most useful AI prompts that will transform your daily development workflow and boost productivity by 10x.",
-    date: "Nov 3, 2025",
-    readTime: "5 min read",
-    category: "Productivity",
-    author: "Sarah Chen",
-  },
-  {
-    title: "How to Write Effective Prompts for Code Generation",
-    excerpt: "Learn the art of prompt engineering specifically for generating clean, maintainable code with AI assistants.",
-    date: "Oct 28, 2025",
-    readTime: "8 min read",
-    category: "Guide",
-    author: "Marcus Johnson",
-  },
-  {
-    title: "Building a Custom Prompt Library for Your Team",
-    excerpt: "A comprehensive guide to creating and organizing team-specific prompts that align with your coding standards and best practices.",
-    date: "Oct 15, 2025",
-    readTime: "6 min read",
-    category: "Team",
-    author: "Emily Rodriguez",
-  },
-  {
-    title: "The Future of AI-Assisted Development",
-    excerpt: "Exploring emerging trends in AI pair programming and what it means for the future of software development and engineering teams.",
-    date: "Oct 8, 2025",
-    readTime: "7 min read",
-    category: "Trends",
-    author: "David Kim",
-  },
-  {
-    title: "Debugging with AI: Best Practices",
-    excerpt: "Master the art of using AI to debug complex issues faster and more effectively than traditional methods.",
-    date: "Sep 25, 2025",
-    readTime: "6 min read",
-    category: "Guide",
-    author: "Alex Turner",
-  },
-  {
-    title: "AI Prompts for Frontend Development",
-    excerpt: "Specialized prompts for React, Vue, and Angular developers to accelerate UI development.",
-    date: "Sep 18, 2025",
-    readTime: "9 min read",
-    category: "Frontend",
-    author: "Jessica Lee",
-  },
-  {
-    title: "Backend Optimization with AI",
-    excerpt: "Use AI to optimize your APIs, database queries, and server performance.",
-    date: "Sep 10, 2025",
-    readTime: "7 min read",
-    category: "Backend",
-    author: "Ryan O'Connor",
-  },
-  {
-    title: "DevOps Automation Using AI Prompts",
-    excerpt: "Streamline your CI/CD pipelines and infrastructure management with intelligent prompts.",
-    date: "Aug 30, 2025",
-    readTime: "10 min read",
-    category: "DevOps",
-    author: "Priya Patel",
-  },
-  {
-    title: "Code Review Automation Guide",
-    excerpt: "Set up automated code reviews using AI to maintain code quality across your team.",
-    date: "Aug 22, 2025",
-    readTime: "8 min read",
-    category: "Guide",
-    author: "Thomas Schmidt",
-  },
-];
 
 const categoryGradients: Record<string, string> = {
   Productivity: "from-[#8A2BE2] to-purple-600",
@@ -93,7 +20,7 @@ const categoryGradients: Record<string, string> = {
   DevOps: "from-purple-600 to-purple-800",
 };
 
-export function AllArticles({ onBack }: AllArticlesProps) {
+export function AllArticles({ onBack, onNavigateToBlogPost }: AllArticlesProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredArticles = allArticles.filter(article =>
@@ -144,7 +71,8 @@ export function AllArticles({ onBack }: AllArticlesProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredArticles.map((article, index) => (
             <Card 
-              key={index} 
+              key={index}
+              onClick={onNavigateToBlogPost}
               className="hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-white group overflow-hidden cursor-pointer"
             >
               <div className={`h-2 bg-gradient-to-r ${categoryGradients[article.category]}`}></div>
@@ -170,7 +98,11 @@ export function AllArticles({ onBack }: AllArticlesProps) {
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <span className="text-sm text-slate-500">By {article.author}</span>
                   <Button 
-                    variant="link" 
+                    variant="link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigateToBlogPost();
+                    }}
                     className="text-[#8A2BE2] hover:text-purple-700 p-0 h-auto group/btn"
                   >
                     Read

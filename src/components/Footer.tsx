@@ -1,6 +1,10 @@
 import { Code2, Github, Twitter, Linkedin, Mail } from "lucide-react";
 
-export function Footer() {
+interface FooterProps {
+  onNavigateToHome: () => void;
+}
+
+export function Footer({ onNavigateToHome }: FooterProps) {
   const links = {
     product: [
       { label: "Browse Prompts", href: "#prompts" },
@@ -45,15 +49,18 @@ export function Footer() {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
           {/* Brand section */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#8A2BE2] to-[#6EE7FF] rounded-lg shadow-lg">
+            <button 
+              onClick={onNavigateToHome}
+              className="flex items-center gap-3 mb-6 group"
+            >
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#8A2BE2] to-[#6EE7FF] rounded-lg shadow-lg group-hover:scale-110 transition-transform">
                 <Code2 className="w-7 h-7 text-white" />
               </div>
               <div>
                 <div className="text-2xl text-white">RapidPrompt</div>
                 <div className="text-xs text-slate-400">AI-Powered Development</div>
               </div>
-            </div>
+            </button>
             <p className="text-sm text-slate-400 mb-6 leading-relaxed">
               Supercharge your development workflow with curated AI prompts. Join thousands of developers building better software faster.
             </p>

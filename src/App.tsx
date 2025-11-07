@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Toaster } from "./components/ui/sonner";
 import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
@@ -8,89 +8,152 @@ import { Blog } from "./components/Blog";
 import { Footer } from "./components/Footer";
 import { AllPrompts } from "./components/pages/AllPrompts";
 import { AllArticles } from "./components/pages/AllArticles";
-import { Categories } from "./components/pages/Categories";
+import { Login } from "./components/pages/Login";
+import { Signup } from "./components/pages/Signup";
 import { Dashboard } from "./components/pages/Dashboard";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { BlogPost } from "./components/pages/BlogPost";
 
-type Page = "home" | "all-prompts" | "all-articles" | "categories" | "dashboard";
+type Page = "home" | "all-prompts" | "all-articles" | "login" | "signup" | "dashboard" | "blog-post";
 
-function AppContent() {
+export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
-  const { user } = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const navigateToHome = () => setCurrentPage("home");
   const navigateToAllPrompts = () => setCurrentPage("all-prompts");
   const navigateToAllArticles = () => setCurrentPage("all-articles");
-  const navigateToCategories = () => setCurrentPage("categories");
-  const navigateToHome = () => setCurrentPage("home");
+  const navigateToLogin = () => setCurrentPage("login");
+  const navigateToSignup = () => setCurrentPage("signup");
   const navigateToDashboard = () => setCurrentPage("dashboard");
+  const navigateToBlogPost = () => setCurrentPage("blog-post");
 
-  // Redirect to dashboard if user is logged in and on home page
-  useEffect(() => {
-    if (user && currentPage === "home") {
-      // Don't auto-redirect, let user navigate manually
-    }
-  }, [user, currentPage]);
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setCurrentPage("dashboard");
+  };
 
+  const handleSignup = () => {
+    setIsLoggedIn(true);
+    setCurrentPage("dashboard");
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentPage("home");
+  };
+
+  // Login Page
+  if (currentPage === "login") {
+    return (
+      <>
+        <Login
+          onNavigateToSignup={navigateToSignup}
+          onNavigateToHome={navigateToHome}
+          onLoginSuccess={handleLogin}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Signup Page
+  if (currentPage === "signup") {
+    return (
+      <>
+        <Signup
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToHome={navigateToHome}
+          onSignupSuccess={handleSignup}
+        />
+        <Toaster />
+      </>
+    );
+  }
+
+  // Dashboard Page
   if (currentPage === "dashboard") {
     return (
       <div className="min-h-screen">
-        <Navigation onNavigateToDashboard={navigateToDashboard} currentPage={currentPage} />
-        <Footer />
+        <Navigation 
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToDashboard={navigateToDashboard}
+          isLoggedIn={isLoggedIn}
+        />
+        <Dashboard onNavigateToHome={navigateToHome} onLogout={handleLogout} />
+        <Footer onNavigateToHome={navigateToHome} />
         <Toaster />
       </div>
     );
   }
 
+  // Blog Post Page
+  if (currentPage === "blog-post") {
+    return (
+      <div className="min-h-screen">
+        <Navigation 
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToDashboard={navigateToDashboard}
+          isLoggedIn={isLoggedIn}
+        />
+        <BlogPost onBack={navigateToAllArticles} />
+        <Footer onNavigateToHome={navigateToHome} />
+        <Toaster />
+      </div>
+    );
+  }
+
+  // All Prompts Page
   if (currentPage === "all-prompts") {
     return (
       <div className="min-h-screen">
-        <Navigation onNavigateToDashboard={navigateToDashboard} />
+        <Navigation 
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToDashboard={navigateToDashboard}
+          isLoggedIn={isLoggedIn}
+        />
         <AllPrompts onBack={navigateToHome} />
-        <Footer />
+        <Footer onNavigateToHome={navigateToHome} />
         <Toaster />
       </div>
     );
   }
 
+  // All Articles Page
   if (currentPage === "all-articles") {
     return (
       <div className="min-h-screen">
-        <Navigation onNavigateToDashboard={navigateToDashboard} />
-        <AllArticles onBack={navigateToHome} />
-        <Footer />
+        <Navigation 
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToDashboard={navigateToDashboard}
+          isLoggedIn={isLoggedIn}
+        />
+        <AllArticles 
+          onBack={navigateToHome}
+          onNavigateToBlogPost={navigateToBlogPost}
+        />
+        <Footer onNavigateToHome={navigateToHome} />
         <Toaster />
       </div>
     );
   }
 
-  if (currentPage === "categories") {
-    return (
-      <div className="min-h-screen">
-        <Navigation onNavigateToDashboard={navigateToDashboard} />
-        <Categories onBack={navigateToHome} />
-        <Footer />
-        <Toaster />
-      </div>
-    );
-  }
-
+  // Home Page
   return (
     <div className="min-h-screen">
-      <Navigation onNavigateToDashboard={navigateToDashboard} />
-      <Hero onNavigateToDashboard={navigateToDashboard} />
-      <Features onNavigateToCategories={navigateToCategories} />
+      <Navigation 
+        onNavigateToLogin={navigateToLogin}
+        onNavigateToDashboard={navigateToDashboard}
+        isLoggedIn={isLoggedIn}
+      />
+      <Hero onNavigateToPrompts={navigateToAllPrompts} />
+      <Features />
       <TopPrompts onNavigateToAll={navigateToAllPrompts} />
-      <Blog onNavigateToAll={navigateToAllArticles} />
-      <Footer />
+      <Blog 
+        onNavigateToAll={navigateToAllArticles}
+        onNavigateToBlogPost={navigateToBlogPost}
+      />
+      <Footer onNavigateToHome={navigateToHome} />
       <Toaster />
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }
