@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "./components/ui/sonner";
 import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
@@ -12,12 +12,14 @@ import { Login } from "./components/pages/Login";
 import { Signup } from "./components/pages/Signup";
 import { Dashboard } from "./components/pages/Dashboard";
 import { BlogPost } from "./components/pages/BlogPost";
+import { useAuth } from "./contexts/AuthContext";
 
 type Page = "home" | "all-prompts" | "all-articles" | "login" | "signup" | "dashboard" | "blog-post";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, logout: firebaseLogout } = useAuth();
+  const isLoggedIn = !!user;
 
   const navigateToHome = () => setCurrentPage("home");
   const navigateToAllPrompts = () => setCurrentPage("all-prompts");
@@ -28,19 +30,24 @@ export default function App() {
   const navigateToBlogPost = () => setCurrentPage("blog-post");
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
     setCurrentPage("dashboard");
   };
 
   const handleSignup = () => {
-    setIsLoggedIn(true);
     setCurrentPage("dashboard");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await firebaseLogout();
     setCurrentPage("home");
   };
+
+  // Redirect to home if user logs out
+  useEffect(() => {
+    if (!user && currentPage === "dashboard") {
+      setCurrentPage("home");
+    }
+  }, [user, currentPage]);
 
   // Login Page
   if (currentPage === "login") {

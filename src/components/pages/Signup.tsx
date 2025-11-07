@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Separator } from "../ui/separator";
 import { Checkbox } from "../ui/checkbox";
 import { Code2, Mail, Lock, User, Github, Chrome } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
 
 interface SignupProps {
   onNavigateToLogin: () => void;
@@ -18,11 +20,55 @@ export function Signup({ onNavigateToLogin, onNavigateToHome, onSignupSuccess }:
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { signUpWithEmail, signInWithGoogle, signInWithGithub } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock signup - in real app, this would call an API
-    onSignupSuccess();
+    if (!agreedToTerms) {
+      toast.error("Please agree to the terms and conditions");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      await signUpWithEmail(email, password, name);
+      toast.success("Account created successfully!");
+      onSignupSuccess();
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      toast.error(error.message || "Failed to create account");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+      toast.success("Signed in with Google!");
+      onSignupSuccess();
+    } catch (error: any) {
+      console.error("Google signup error:", error);
+      toast.error(error.message || "Failed to sign in with Google");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubSignup = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGithub();
+      toast.success("Signed in with GitHub!");
+      onSignupSuccess();
+    } catch (error: any) {
+      console.error("GitHub signup error:", error);
+      toast.error(error.message || "Failed to sign in with GitHub");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -109,7 +155,7 @@ export function Signup({ onNavigateToLogin, onNavigateToHome, onSignupSuccess }:
                 <Checkbox
                   id="terms"
                   checked={agreedToTerms}
-                  onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                  onCheckedChange={(checked: boolean) => setAgreedToTerms(checked)}
                 />
                 <label
                   htmlFor="terms"
@@ -129,9 +175,9 @@ export function Signup({ onNavigateToLogin, onNavigateToHome, onSignupSuccess }:
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-[#8A2BE2] to-purple-600 hover:from-[#7B24D1] hover:to-purple-700 text-white shadow-lg shadow-purple-500/30"
-                disabled={!agreedToTerms}
+                disabled={!agreedToTerms || isLoading}
               >
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 
@@ -146,11 +192,21 @@ export function Signup({ onNavigateToLogin, onNavigateToHome, onSignupSuccess }:
               </div>
 
               <div className="grid grid-cols-2 gap-3 mt-4">
-                <Button variant="outline" type="button">
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={handleGithubSignup}
+                  disabled={isLoading}
+                >
                   <Github className="w-4 h-4 mr-2" />
                   GitHub
                 </Button>
-                <Button variant="outline" type="button">
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={handleGoogleSignup}
+                  disabled={isLoading}
+                >
                   <Chrome className="w-4 h-4 mr-2" />
                   Google
                 </Button>

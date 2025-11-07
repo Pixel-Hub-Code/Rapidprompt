@@ -5,6 +5,8 @@ import { Label } from "../ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Separator } from "../ui/separator";
 import { Code2, Mail, Lock, Github, Chrome } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
 
 interface LoginProps {
   onNavigateToSignup: () => void;
@@ -15,11 +17,50 @@ interface LoginProps {
 export function Login({ onNavigateToSignup, onNavigateToHome, onLoginSuccess }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { signInWithEmail, signInWithGoogle, signInWithGithub } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - in real app, this would call an API
-    onLoginSuccess();
+    setIsLoading(true);
+    try {
+      await signInWithEmail(email, password);
+      toast.success("Signed in successfully!");
+      onLoginSuccess();
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast.error(error.message || "Failed to sign in");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+      toast.success("Signed in with Google!");
+      onLoginSuccess();
+    } catch (error: any) {
+      console.error("Google sign in error:", error);
+      toast.error(error.message || "Failed to sign in with Google");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGithubSignIn = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGithub();
+      toast.success("Signed in with GitHub!");
+      onLoginSuccess();
+    } catch (error: any) {
+      console.error("GitHub sign in error:", error);
+      toast.error(error.message || "Failed to sign in with GitHub");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -96,8 +137,9 @@ export function Login({ onNavigateToSignup, onNavigateToHome, onLoginSuccess }: 
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-[#8A2BE2] to-purple-600 hover:from-[#7B24D1] hover:to-purple-700 text-white shadow-lg shadow-purple-500/30"
+                disabled={isLoading}
               >
-                Sign In
+                {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
 
@@ -112,11 +154,21 @@ export function Login({ onNavigateToSignup, onNavigateToHome, onLoginSuccess }: 
               </div>
 
               <div className="grid grid-cols-2 gap-3 mt-4">
-                <Button variant="outline" type="button">
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={handleGithubSignIn}
+                  disabled={isLoading}
+                >
                   <Github className="w-4 h-4 mr-2" />
                   GitHub
                 </Button>
-                <Button variant="outline" type="button">
+                <Button 
+                  variant="outline" 
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={isLoading}
+                >
                   <Chrome className="w-4 h-4 mr-2" />
                   Google
                 </Button>
